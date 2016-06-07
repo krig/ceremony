@@ -184,13 +184,49 @@ def process_files(env, process_css=True):
         rebuild_statcache()
 
 
+def init_project():
+    made_pages = False
+    for p in DIRS:
+        if not os.path.isdir(p):
+            if p == 'pages':
+                made_pages = True
+            os.mkdir(p)
+
+    if made_pages:
+        open('pages/index.md', 'w').write("""title: Main page
+pretty_url: false
+
+# Hello world!
+
+Website content goes *here*.
+""")
+        open('css/main.scss', 'w').write("""body {
+    background: #fafffd;
+    color: #444;
+}
+""")
+        open('layouts/page.html', 'w').write("""<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="HandheldFriendly" content="True">
+  <title>{{title}}</title>
+  <link rel="stylesheet" type="text/css" media="screen" href="/css/main.css" />
+</head>
+<body>
+{{text}}
+</body>
+</html>
+""")
+
+
 def main():
     env = jinja2.Environment(loader=jinja2.FileSystemLoader('layouts'))
 
     if args.command == 'init':
-        for p in DIRS:
-            if not os.path.isdir(p):
-                os.mkdir(p)
+        init_project()
         sys.exit(0)
 
     if not all(os.path.isdir(p) for p in DIRS):
