@@ -24,8 +24,4 @@ setup(name='ceremony',
       license='GPLv3+',
       packages=[],
       install_requires=['Jinja2', 'Markdown'],
-      entry_points={
-          'console_scripts': [
-              'ceremony=ceremony.main'
-          ]
-      })
+      scripts=['ceremony'])

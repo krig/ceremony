@@ -16,10 +16,7 @@ from __future__ import print_function
 import os
 import sys
 import re
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
+import pickle
 import time
 import argparse
 import subprocess
@@ -41,25 +38,25 @@ def is_true(sbool):
 
 
 def replace_if_different(filename, content):
-    action = 'U'
+    action = 'A'
     if os.path.isfile(filename):
         fmd5 = hashlib.md5()
-        fmd5.update(open(filename).read())
+        fmd5.update(open(filename, 'rb').read())
         cmd5 = hashlib.md5()
         cmd5.update(content)
         if fmd5.digest() == cmd5.digest():
             if VERBOSE:
                 print('.', filename)
             return False
-        action = 'A'
+        action = 'U'
     print(action, filename)
-    with open(filename, 'w') as outf:
+    with open(filename, 'wb') as outf:
         outf.write(content)
     return True
 
 
 def process_file(infile, outfile):
-    replace_if_different(outfile, open(infile).read())
+    replace_if_different(outfile, open(infile, 'rb').read())
 
 
 def read_with_options(filename):
@@ -98,9 +95,9 @@ def process_markdown(filename, outdir, env):
     if is_true(options.get('pretty_url', 'true')):
         if not os.path.isdir(os.path.join(outdir, name)):
             os.mkdir(os.path.join(outdir, name))
-        replace_if_different(os.path.join(outdir, name, 'index.html'), rendered)
+        replace_if_different(os.path.join(outdir, name, 'index.html'), rendered.encode('utf-8'))
     else:
-        replace_if_different(os.path.join(outdir, name + '.html'), rendered)
+        replace_if_different(os.path.join(outdir, name + '.html'), rendered.encode('utf-8'))
 
 
 def process_html(filename, outdir, env):
@@ -114,9 +111,9 @@ def process_html(filename, outdir, env):
     if is_true(options.get('pretty_url', 'true')):
         if not os.path.isdir(os.path.join(outdir, name)):
             os.mkdir(os.path.join(outdir, name))
-        replace_if_different(os.path.join(outdir, name, 'index.html'), rendered)
+        replace_if_different(os.path.join(outdir, name, 'index.html'), rendered.encode('utf-8'))
     else:
-        replace_if_different(os.path.join(outdir, name + '.html'), rendered)
+        replace_if_different(os.path.join(outdir, name + '.html'), rendered.encode('utf-8'))
 
 
 def process_page(filename, outdir, env):
@@ -266,7 +263,7 @@ def main():
         sys.exit(1)
 
     if USECACHE and os.path.isfile(CACHENAME):
-        STATCACHE = pickle.load(open(CACHENAME))
+        STATCACHE = pickle.load(open(CACHENAME, 'rb'))
 
     env = jinja2.Environment(loader=jinja2.FileSystemLoader('layouts'))
     try:
@@ -285,7 +282,7 @@ def main():
             process_files(env, process_css=True)
     finally:
         if USECACHE:
-            pickle.dump(STATCACHE, open(CACHENAME, 'w'))
+            pickle.dump(STATCACHE, open(CACHENAME, 'wb'))
 
 
 if __name__ == "__main__":
