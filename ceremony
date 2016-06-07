@@ -30,6 +30,7 @@ VERBOSE = False
 USECACHE = True
 OPTION_RE = re.compile(r'^\s*(\w+):\s*(.+)$')
 STATCACHE = {}
+CACHENAME = '.ceremony-cache'
 
 
 def is_true(sbool):
@@ -192,9 +193,9 @@ def init_project(params):
         os.chdir(params[0])
         print("Creating ceremony site layout in %s" % (params[0]))
         open('.gitignore', 'w').write(""".#*
-.site-cache
+%s
 build/**
-""")
+""" % (CACHENAME))
 
     made_pages = False
     for p in DIRS:
@@ -235,6 +236,40 @@ Website content goes *here*.
 
 def main():
     env = jinja2.Environment(loader=jinja2.FileSystemLoader('layouts'))
+    try:
+        if args.command == 'watch':
+            p = subprocess.Popen(['sass', '--scss', '-t', 'compressed', '--watch', 'css:build/css'])
+            try:
+                while True:
+                    process_files(env, process_css=False)
+                    time.sleep(1)
+            except KeyboardInterrupt:
+                pass
+            finally:
+                p.send_signal(signal.SIGINT)
+                p.wait()
+        else:
+            process_files(env, process_css=True)
+    finally:
+        if USECACHE:
+            pickle.dump(STATCACHE, open(CACHENAME, 'w'))
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Website building tool", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('-v', '--verbose', dest='verbose', action='store_true',
+                        help="Verbal exuberance mode")
+    parser.add_argument('-C', '--no-cache', dest='no_cache', action='store_true',
+                        help="Disable the mstat cache")
+    parser.add_argument('command', metavar='COMMAND', nargs='?', help='Command to execute [watch | init | make]', default='make')
+    parser.add_argument('args', metavar='ARGS', nargs='*', help='Arguments to command')
+
+    args = parser.parse_args()
+    VERBOSE = args.verbose
+    USECACHE = not args.no_cache
+    if args.command and args.command not in ('watch', 'init', 'make'):
+        args.print_usage()
+        sys.exit(1)
 
     if args.command == 'init':
         init_project(args.args)
@@ -244,42 +279,7 @@ def main():
         print("Missing essential directory, please run %s init" % (sys.argv[0]), file=sys.stderr)
         sys.exit(1)
 
-    if args.command == 'watch':
-        p = subprocess.Popen(['sass', '--scss', '-t', 'compressed', '--watch', 'css:build/css'])
-        try:
-            while True:
-                process_files(env, process_css=False)
-                time.sleep(1)
-        except KeyboardInterrupt:
-            pass
-        finally:
-            p.send_signal(signal.SIGINT)
-            p.wait()
-    else:
-        process_files(env, process_css=True)
+    if USECACHE and os.path.isfile(CACHENAME):
+        STATCACHE = pickle.load(open(CACHENAME))
 
-
-if __name__ == "__main__":
-    try:
-        parser = argparse.ArgumentParser(description="Website building tool", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-        parser.add_argument('-v', '--verbose', dest='verbose', action='store_true',
-                            help="Verbal exuberance mode")
-        parser.add_argument('-C', '--no-cache', dest='no_cache', action='store_true',
-                            help="Disable the mstat cache")
-        parser.add_argument('command', metavar='COMMAND', nargs='?', help='Command to execute [watch | init | make]', default='make')
-        parser.add_argument('args', metavar='ARGS', nargs='*', help='Arguments to command')
-
-        args = parser.parse_args()
-        VERBOSE = args.verbose
-        USECACHE = not args.no_cache
-        if args.command and args.command not in ('watch', 'init', 'make'):
-            args.print_usage()
-            sys.exit(1)
-
-        if USECACHE and os.path.isfile('.siter-cache'):
-            STATCACHE = pickle.load(open('.siter-cache'))
-
-        main()
-    finally:
-        if USECACHE:
-            pickle.dump(STATCACHE, open('.siter-cache', 'w'))
+    main()
