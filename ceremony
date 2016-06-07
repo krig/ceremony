@@ -184,7 +184,14 @@ def process_files(env, process_css=True):
         rebuild_statcache()
 
 
-def init_project():
+def init_project(params):
+    if len(params):
+        if os.path.isdir(params[0]):
+            raise IOError("%s already exists." % (params[0]))
+        os.mkdir(params[0])
+        os.chdir(params[0])
+        print("Creating ceremony site layout in %s" % (params[0]))
+
     made_pages = False
     for p in DIRS:
         if not os.path.isdir(p):
@@ -226,7 +233,7 @@ def main():
     env = jinja2.Environment(loader=jinja2.FileSystemLoader('layouts'))
 
     if args.command == 'init':
-        init_project()
+        init_project(args.args)
         sys.exit(0)
 
     if not all(os.path.isdir(p) for p in DIRS):
@@ -256,6 +263,7 @@ if __name__ == "__main__":
         parser.add_argument('-C', '--no-cache', dest='no_cache', action='store_true',
                             help="Disable the mstat cache")
         parser.add_argument('command', metavar='COMMAND', nargs='?', help='Command to execute [watch | init | make]', default='make')
+        parser.add_argument('args', metavar='ARGS', nargs='*', help='Arguments to command')
 
         args = parser.parse_args()
         VERBOSE = args.verbose
