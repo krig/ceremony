@@ -10,6 +10,19 @@ A static site generator, as simple as I could imagine it.
 
 ## Usage
 
+        usage: ceremony [-h] [-v] [-C] [COMMAND] [ARGS [ARGS ...]]
+
+        Website building tool
+
+        positional arguments:
+          COMMAND         Command to execute [watch | init | make] (default: make)
+          ARGS            Arguments to command (default: None)
+
+        optional arguments:
+          -h, --help      show this help message and exit
+          -v, --verbose   Verbal exuberance mode (default: False)
+          -C, --no-cache  Disable the mstat cache (default: False)
+
 To create a new site, run
 
         ceremony init [<site-directory>]
