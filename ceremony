@@ -16,7 +16,10 @@ from __future__ import print_function
 import os
 import sys
 import re
-import cPickle as pickle
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
 import time
 import argparse
 import subprocess
@@ -235,27 +238,10 @@ Website content goes *here*.
 
 
 def main():
-    env = jinja2.Environment(loader=jinja2.FileSystemLoader('layouts'))
-    try:
-        if args.command == 'watch':
-            p = subprocess.Popen(['sass', '--scss', '-t', 'compressed', '--watch', 'css:build/css'])
-            try:
-                while True:
-                    process_files(env, process_css=False)
-                    time.sleep(1)
-            except KeyboardInterrupt:
-                pass
-            finally:
-                p.send_signal(signal.SIGINT)
-                p.wait()
-        else:
-            process_files(env, process_css=True)
-    finally:
-        if USECACHE:
-            pickle.dump(STATCACHE, open(CACHENAME, 'w'))
+    global VERBOSE
+    global USECACHE
+    global STATCACHE
 
-
-if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Website building tool", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-v', '--verbose', dest='verbose', action='store_true',
                         help="Verbal exuberance mode")
@@ -282,4 +268,25 @@ if __name__ == "__main__":
     if USECACHE and os.path.isfile(CACHENAME):
         STATCACHE = pickle.load(open(CACHENAME))
 
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader('layouts'))
+    try:
+        if args.command == 'watch':
+            p = subprocess.Popen(['sass', '--scss', '-t', 'compressed', '--watch', 'css:build/css'])
+            try:
+                while True:
+                    process_files(env, process_css=False)
+                    time.sleep(1)
+            except KeyboardInterrupt:
+                pass
+            finally:
+                p.send_signal(signal.SIGINT)
+                p.wait()
+        else:
+            process_files(env, process_css=True)
+    finally:
+        if USECACHE:
+            pickle.dump(STATCACHE, open(CACHENAME, 'w'))
+
+
+if __name__ == "__main__":
     main()

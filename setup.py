@@ -12,13 +12,20 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from distutils.core import setup
+from setuptools import setup, find_packages
 
 setup(name='ceremony',
       version='0.1.0',
-      description='Static site builder',
+      description='Ceremony is a static site generator using Jinja2 and SASS',
       author='Kristoffer Gronlund',
       author_email='krig@koru.se',
       url='https://github.com/krig/ceremony',
+      keywords='tool website generator',
+      license='GPLv3+',
       packages=[],
-      scripts=['ceremony'])
+      install_requires=['Jinja2', 'Markdown'],
+      entry_points={
+          'console_scripts': [
+              'ceremony=ceremony.main'
+          ]
+      })
