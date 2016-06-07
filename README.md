@@ -2,6 +2,10 @@
 
 A static site generator, as simple as I could imagine it.
 
+## Installation
+
+    pip install ceremony
+
 ## Dependencies
 
 * jinja2
@@ -10,40 +14,40 @@ A static site generator, as simple as I could imagine it.
 
 ## Usage
 
-        usage: ceremony [-h] [-v] [-C] [COMMAND] [ARGS [ARGS ...]]
+    usage: ceremony [-h] [-v] [-C] [COMMAND] [ARGS [ARGS ...]]
 
-        Website building tool
+    Website building tool
 
-        positional arguments:
-          COMMAND         Command to execute [watch | init | make] (default: make)
-          ARGS            Arguments to command (default: None)
+    positional arguments:
+      COMMAND         Command to execute [watch | init | make] (default: make)
+      ARGS            Arguments to command (default: None)
 
-        optional arguments:
-          -h, --help      show this help message and exit
-          -v, --verbose   Verbal exuberance mode (default: False)
-          -C, --no-cache  Disable the mstat cache (default: False)
+    optional arguments:
+      -h, --help      show this help message and exit
+      -v, --verbose   Verbal exuberance mode (default: False)
+      -C, --no-cache  Disable the mstat cache (default: False)
 
 To create a new site, run
 
-        ceremony init [<site-directory>]
+    ceremony init [<site-directory>]
 
 All this does is create the default directory layout in the current
 directory or <site-directory>, which is
 
-        build/        The generated site is written here.
-        pages/        The source .md and .html documents go here.
-        layouts/      The Jinja2 templates go here.
-        css/          SCSS and CSS files go here.
-        js/           Files here are copied to build/js/
-        img/          Files here are copied to build/img/
+    build/        The generated site is written here.
+    pages/        The source .md and .html documents go here.
+    layouts/      The Jinja2 templates go here.
+    css/          SCSS and CSS files go here.
+    js/           Files here are copied to build/js/
+    img/          Files here are copied to build/img/
 
 To generate the site, run
 
-        ceremony
+    ceremony
 
 To watch the source files and regenerate on changes, run
 
-        ceremony watch
+    ceremony watch
 
 ## `pages/`
 
@@ -51,11 +55,11 @@ The files in `pages/` are processed into actual webpages via the
 jinja2 templates in `layouts/`. The general structure of all pages in
 `pages/` is:
 
-        <key>: <value>
-        <key>: <value>
-        ...
+    <key>: <value>
+    <key>: <value>
+    ...
 
-        <text>
+    <text>
 
 The values set at the top of the file are available from the jinja2
 template as `{{<key>}}`. The text (everything following the key:value
