@@ -191,6 +191,10 @@ def init_project(params):
         os.mkdir(params[0])
         os.chdir(params[0])
         print("Creating ceremony site layout in %s" % (params[0]))
+        open('.gitignore', 'w').write(""".#*
+.site-cache
+build/**
+""")
 
     made_pages = False
     for p in DIRS:
