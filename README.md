@@ -66,9 +66,26 @@ template as `{{<key>}}`. The text (everything following the key:value
 section) is available as `{{text}}`. This is true with the exception
 of a few special values:
 
-* `title`: This sets the page title.
 * `layout`: This selects the base layout (name of jinja2 template minus `.html` extension)
 * `pretty_url`: Don't prettify the generated URL layout.
+
+### `layout`
+
+The layout determines the base template used for the generated page. Maybe I should have called it `template` instead...
+
+The text of the post (post-processed markdown or raw html depending on the source file type) is available to the templates as the `{{text}}` variable.
+
+Here's an example layout:
+
+    <!doctype html>
+    <html>
+      <head>
+        <title>{{title}}</title>
+      </head>
+      <body>
+        {{text}}
+      </body>
+    </html>
 
 ### `pretty_url`
 
