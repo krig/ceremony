@@ -32,7 +32,7 @@ To create a new site, run
     ceremony init [<site-directory>]
 
 All this does is create the default directory layout in the current
-directory or <site-directory>, which is
+directory or `<site-directory>`, which is
 
     build/        The generated site is written here.
     pages/        The source .md and .html documents go here.
